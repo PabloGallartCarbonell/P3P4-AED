@@ -353,9 +353,17 @@ En nuestro estudio queremos aplicar una serie de criterios de exclusión sobre l
 * Nota: Revisar el uso de la función filter vista en clase y tener en cuenta los operadores de comparación: igual ==, distinto !=, mayor >, mayor o igual >=, menor <, menor o igual <=.
 
 ```{r }
+unique(planes$manufacturer[grepl("MCDON|AIRBUS", planes$manufacturer)])
+```
+```{r}
+planes.f <- planes %>%
+  filter(!grepl("^MCDONN?ELL", manufacturer)) %>%     # fuera MCDONNELL DOUGLAS (todas sus variantes)
+  filter(seats >= 90, seats <= 210) %>%                # entre 90 y 210 asientos
+  mutate(manufacturer=ifelse(grepl("^AIRBUS", manufacturer), "AIRBUS COMP", manufacturer))
 
-
-
+unique(planes.f$manufacturer)
+dim(planes.f)
+head(planes.f)
 ```
 
 
