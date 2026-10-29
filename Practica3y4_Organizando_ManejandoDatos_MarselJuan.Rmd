@@ -612,18 +612,49 @@ Realiza un histograma de las duraciones de los vuelos entre ambos aeropuertos. �
 
 3. ¿Qué companía aérea elegirías si tienes que ir desde La Guardia (LGA) a Denver (DEN) en el menor tiempo posible (en promedio), considerando los retrasos de salida y llegada. ¿Cuál es la duración media del vuelo (en horas)?
 ```{r}
+#Cargamos los datos originales en un entorno aparte.
+orig <- new.env()
+load("./data/VuelosNY.Rdata", envir=orig)
+vuelos <- orig$flights
+aviones <- orig$planes
 
+# Nombres de las compañías
+lineas <- read.csv("./data/CodigoLineasAereas.csv")
+
+head(lineas)
+
+#1
+jfk.sfo <- vuelos %>%
+  filter(origin=="JFK", dest=="SFO", !is.na(tailnum)) %>%
+  count(tailnum, carrier, name="n_vuelos") %>%
+  left_join(aviones, by="tailnum") %>%
+  left_join(lineas, by="carrier") %>%
+  arrange(desc(n_vuelos)) %>%
+  select(tailnum, n_vuelos, year_fabricacion=year, carrier, name, manufacturer, model, seats)
+head(jfk.sfo, 5)
+mejor <- jfk.sfo %>% filter(n_vuelos == max(n_vuelos))
 ```
+El máximo de vuelos en la ruta JFK-SFO es `r mejor$n_vuelos[1]`, y lo alcanzan `r nrow(mejor)` avión(es): `r paste0(mejor$tailnum, " (construido en ", mejor$year_fabricacion, ", compañía ", mejor$carrier, " - ", mejor$name, ", ", mejor$manufacturer, " ", mejor$model, ", ", mejor$seats, " asientos)", collapse="; ")`. En caso de empate, el de fabricación más antigua es el `r mejor$tailnum[which.min(mejor$year_fabricacion)]`.
 
 
 ```{r}
-
+#2 
+jfk.lax <- vuelos %>% filter(origin=="JFK", dest=="LAX")
+n.comp <- n_distinct(jfk.lax$carrier)
+n.av <- n_distinct(jfk.lax$tailnum, na.rm=TRUE)
+c(companias=n.comp, aviones=n.av)
+unique(jfk.lax$carrier)
 ```
+**Respuesta.** La ruta JFK-LAX la operan `r n.comp` compañías aéreas (`r paste(sort(unique(jfk.lax$carrier)), collapse=", ")`) y la han realizado `r n.av` aviones distintos.
 
 ```{r, fig.width=7, fig.height=3}
-
+#2 Histograma
+ggplot(jfk.lax, aes(x=air_time)) +
+  geom_histogram(bins=40, fill="steelblue", colour="white", na.rm=TRUE) +
+  labs(x="Duración del vuelo (minutos en el aire)", y="Número de vuelos")
+rango <- range(jfk.lax$air_time, na.rm=TRUE)
 ```
-
+**Respuesta.** La duración va de `r rango[1]` a `r rango[2]` minutos (unas `r round(rango[1]/60, 1)`-`r round(rango[2]/60, 1)` horas) y el histograma es unimodal, sin un segundo grupo de vuelos mucho más largos. Esa duración es la de un vuelo transcontinental sin escalas, así que todos los vuelos son directos.
 
 
 
