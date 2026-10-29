@@ -341,8 +341,10 @@ load("./data/VuelosNY.Rdata")
 Muestra las primeras muestras de ambos data frames para hacerte una idea de las variables que contienen. ¿Qué diferencia existe entre la información mostrada en ambos data frames?
 
 ```{r }
-
+head(flights)
+head(planes)
 ```
+**Respuesta.** `flights` contiene una fila por **vuelo** (fecha, horas de salida y llegada, retrasos, compañía `carrier`, número de vuelo, matrícula `tailnum`, origen, destino, distancia...). `planes` contiene una fila por **avión** con sus características técnicas (año de fabricación, fabricante, modelo, número de motores y de asientos...). 
 
 ### Ejercicio 6
 
