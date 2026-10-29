@@ -481,8 +481,23 @@ Esto se puede hacer fácilmente con las librerías `plyr` y `dplyr`.
 En la librería _tidyr_ hay varios conjuntos de datos. **table1** es un conjunto _tidy_ pero **table5** no lo es. Realiza las operaciones necesarias para obtener **table1** a partir de **table5**. También deben coincidir los tipos de datos de las columnas. 
 
 ```{r}
+names(table1)
+#"country"    "year", "cases"      "population"
+head(table1)
+names(table5)
+#"country" "century" "year" "rate"
+head(table5)
 
-
+table5.tidy <- table5 %>%
+  unite("year", century, year, sep="") %>%
+  separate(rate, into=c("cases", "population"), sep="/") %>%
+  mutate(
+    year = as.double(year),
+    cases = as.double(cases),
+    population = as.double(population)
+  )
+table5.tidy
+all.equal(table5.tidy, table1) #TRUE
 ```
 
 ## DPLYR
