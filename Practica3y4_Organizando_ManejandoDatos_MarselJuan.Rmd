@@ -562,22 +562,45 @@ library(ggplot2)
 * Representa los boxplots de las variables relacionadas con el retraso en la llegada y en la salida (las que terminan con la palabra `delay`) agrupadas por compañía aérea (variable `carrier`) dibujando en dos colores diferentes cada tipo de retraso: tendrás que modificar el data frame con la función `pivot_longer` para crear una nueva variable que indique el tipo de retraso (llegada y salida) que sirva para colorear agrupando por cada tipo de retraso.
 
 ```{r }
+flights %>%
+  select(carrier, dep_delay, arr_delay) %>%
+  pivot_longer(cols=ends_with("delay"), names_to="tipo", values_to="retraso") %>%
+  mutate(tipo=recode(tipo, dep_delay="Salida", arr_delay="Llegada")) %>%
+  ggplot(aes(x=carrier, y=retraso, fill=tipo)) +
+  geom_boxplot(outlier.size=0.5, outlier.alpha=0.3) +
+  labs(x="Compañía aérea", y="Retraso (min)", fill="Tipo de retraso")
 
-
+```
+```{r}
+#Mejor así
+flights %>%
+  select(carrier, dep_delay, arr_delay) %>%
+  pivot_longer(cols=ends_with("delay"), names_to="tipo", values_to="retraso") %>%
+  mutate(tipo=recode(tipo, dep_delay="Salida", arr_delay="Llegada")) %>%
+  ggplot(aes(x=carrier, y=retraso, fill=tipo)) +
+  geom_boxplot(outlier.size=0.5, outlier.alpha=0.3) +
+  coord_cartesian(ylim=c(-40, 100)) +      # se recorta el eje para ver las cajas (no se eliminan datos)
+  labs(x="Compañía aérea", y="Retraso (min)", fill="Tipo de retraso")
 ```
 
 * Representa un gráfico de barras que contenga, para cada compañía aérea (`carrier`), el retraso medio de llegadas, de salidas y el retraso global (nueva variable con el promedio del retraso de salida y el retraso de llegadas). El eje $x$ representará la compañía aérea y el eje $y$ el retraso. Las barras de cada tipo de retraso (llegadas, salidas y global) tendrán un color de relleno diferente (tendrás que modificar el data frame con la función `pivot_longer` para crear una nueva variable que indique el tipo de retraso) y se posicionarán una junto a la otra (no apiladas). No olvides añadir etiquetas en los ejes $x$ e $y$.
 
 ```{r }
-
+flights %>%
+  group_by(carrier) %>%
+  summarise(Salida=mean(dep_delay, na.rm=TRUE), Llegada=mean(arr_delay, na.rm=TRUE)) %>%
+  mutate(Global=(Salida + Llegada)/2) %>%
+  pivot_longer(cols=c(Salida, Llegada, Global), names_to="tipo", values_to="retraso") %>%
+  mutate(tipo=factor(tipo, levels=c("Salida", "Llegada", "Global"))) %>%
+  ggplot(aes(x=carrier, y=retraso, fill=tipo)) +
+  geom_col(position="dodge") +
+  labs(x="Compañía aérea", y="Retraso medio (min)", fill="Tipo de retraso")
 
 ```
 
 ¿Cuál de las dos representaciones anteriores es más adecuada para visualizar los retrasos?
 
-
-
-
+**Respuesta.** Los retrasos tienen una distribución muy asimétrica (la mayoría de vuelos salen casi a su hora y unos pocos acumulan retrasos enormes), por lo que la media del gráfico de barras queda muy influida por esos valores extremos y no muestra la variabilidad. El **boxplot** es más adecuado para visualizar los retrasos, porque enseña la mediana, la dispersión y los valores atípicos de cada compañía y tipo de retraso. El gráfico de barras sólo es preferible si se busca una comparación rápida del retraso medio entre compañías.
 
 ### Ejercicio Extra 6
  Utilizando los conjuntos de datos `flights` y `planes` responde a las siguientes preguntas
@@ -589,21 +612,23 @@ Realiza un histograma de las duraciones de los vuelos entre ambos aeropuertos. �
 
 3. ¿Qué companía aérea elegirías si tienes que ir desde La Guardia (LGA) a Denver (DEN) en el menor tiempo posible (en promedio), considerando los retrasos de salida y llegada. ¿Cuál es la duración media del vuelo (en horas)?
 ```{r}
-#1
 
 ```
 
+
 ```{r}
-#2 
 
 ```
 
-```{r}
-#2 Histograma
+```{r, fig.width=7, fig.height=3}
 
 ```
 
+
+
+
 ```{r}
+#3 
 
 
 ```
