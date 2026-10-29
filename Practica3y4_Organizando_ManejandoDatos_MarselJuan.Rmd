@@ -530,7 +530,7 @@ retrasos.fab <- flights %>%
   arrange(desc(RetSal))
 retrasos.fab
 ```
-**Respuesta.** Los dos fabricantes con más retraso medio en la **salida** son `r top.sal$manufacturer[1]` (`r round(top.sal$RetSal[1], 2)` min) y `r top.sal$manufacturer[2]` (`r round(top.sal$RetSal[2], 2)` min). En la **llegada** son `r top.lle$manufacturer[1]` (`r round(top.lle$RetLle[1], 2)` min) y `r top.lle$manufacturer[2]` (`r round(top.lle$RetLle[2], 2)` min).
+
 
 ```{r }
 
@@ -634,7 +634,7 @@ jfk.sfo <- vuelos %>%
 head(jfk.sfo, 5)
 mejor <- jfk.sfo %>% filter(n_vuelos == max(n_vuelos))
 ```
-El máximo de vuelos en la ruta JFK-SFO es `r mejor$n_vuelos[1]`, y lo alcanzan `r nrow(mejor)` avión(es): `r paste0(mejor$tailnum, " (construido en ", mejor$year_fabricacion, ", compañía ", mejor$carrier, " - ", mejor$name, ", ", mejor$manufacturer, " ", mejor$model, ", ", mejor$seats, " asientos)", collapse="; ")`. En caso de empate, el de fabricación más antigua es el `r mejor$tailnum[which.min(mejor$year_fabricacion)]`.
+El máximo de vuelos en la ruta JFK-SFO es `r mejor$n_vuelos[1]`, y lo alcanzan `r nrow(mejor)` aviónes: `r paste0(mejor$tailnum, " (construido en ", mejor$year_fabricacion, ", compañía ", mejor$carrier, " - ", mejor$name, ", ", mejor$manufacturer, " ", mejor$model, ", ", mejor$seats, " asientos)", collapse="; ")`. 
 
 
 ```{r}
