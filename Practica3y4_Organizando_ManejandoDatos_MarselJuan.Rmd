@@ -262,7 +262,11 @@ Para pasar a formato _tidy_ necesitamos realizar dos operaciones en este caso. E
 Convierte el conjunto de datos TB en _tidy_ utilizando `gather` y `separate`.
 
 ```{r}
-
+tb.tidy <- gather(raw, key="sexo_edad", value="casos", -country, -year, na.rm=TRUE) %>%
+  separate(sexo_edad, into=c("sexo", "edad"), sep=1) %>%    # 1er carácter = sexo, resto = edad
+  mutate(edad=recode(edad, "014"="0-14", "1524"="15-24", "2534"="25-34", "3544"="35-44",
+                     "4554"="45-54", "5564"="55-64", "65"="65+", "u"="desconocido"))
+head(tb.tidy)
 ```
 
 
